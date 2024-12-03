@@ -1,0 +1,38 @@
+name: Build and Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main  # 监听 `main` 分支的推送事件
+  workflow_dispatch:  # 允许手动触发工作流
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  # 在最新的 Ubuntu 上运行
+
+    steps:
+      # 检出代码
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 设置 Node.js 环境
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18  # 使用 Node.js 18 LTS 版本
+
+      # 安装依赖
+      - name: Install dependencies
+        run: npm install  # 安装项目依赖
+
+      # 构建 Valaxy 博客
+      - name: Build Valaxy blog
+        run: npm run build  # 执行构建命令生成静态文件
+
+      # 部署到 GitHub Pages
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GH_TOKEN }}  # 使用 GitHub 自动生成的令牌
+          publish_dir: ./dist  # 部署目录，构建后的静态文件所在的目录
+          force_orphan: true  # 强制使用孤儿分支（gh-pages）
