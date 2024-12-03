@@ -1,0 +1,49 @@
+name: GitHub Pages
+
+# 当推送到以下分支时触发部署
+on:
+  push:
+    branches:
+      # 项目源代码所在的分支，这里可以是主分支（main）、旧版分支（master）或者你选择的其他分支（如 valaxy）
+      - main
+      - master
+      - valaxy
+
+jobs:
+  build:
+    # 设置操作系统
+    runs-on: ${{ matrix.os }}
+
+    # 设置 Node.js 版本和操作系统的矩阵策略
+    strategy:
+      matrix:
+        node-version: [lts/*]  # 使用最新的 LTS 版本的 Node.js
+        os: [ubuntu-latest]    # 使用最新版本的 Ubuntu 操作系统
+      fail-fast: false
+
+    steps:
+      # 检出代码仓库
+      - uses: actions/checkout@v2
+
+      # 设置 Node.js 环境
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          registry-url: https://registry.npmjs.org/  # 指定 npm 的注册源
+
+      # 安装依赖
+      - name: 📦 Install Dependencies
+        run: npm install  # 使用 npm 安装项目依赖（你可以改用 pnpm 取决于你的项目管理工具）
+
+      # 构建 Valaxy 博客
+      - name: 🌌 Build Valaxy Blog
+        run: npm run build  # 使用构建命令生成静态文件（你可能需要在 package.json 中确认 build 脚本是否正确）
+
+      # 部署到 GitHub Pages
+      - name: 🪤 Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}  # 使用 GitHub 自动生成的 token 进行认证
+          publish_dir: ./dist  # 指定部署目录，Valaxy 默认会把静态文件放在 ./dist 目录
+          force_orphan: true  # 强制创建一个孤立分支，不继承历史提交记录，防止可能的冲突
