@@ -1,0 +1,39 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main # 监控 main 分支的提交变化
+  workflow_dispatch: # 手动触发部署
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Step 1: 检出代码
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # Step 2: 安装 Node.js 环境
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18 # 指定 Node.js 版本
+        cache: "npm"
+
+    # Step 3: 安装依赖
+    - name: Install dependencies
+      run: npm install
+
+    # Step 4: 构建项目
+    - name: Build the project
+      run: npm run build
+
+    # Step 5: 部署到 gh-pages 分支
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./dist # 静态文件的输出目录，需与实际构建目录一致
+        destination_dir: "" # 部署到 gh-pages 的根目录
