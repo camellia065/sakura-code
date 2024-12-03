@@ -44,6 +44,6 @@ jobs:
       - name: 🪤 Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
-          github_token: ${{ secrets.GH_TOKEN }}  # 引用配置的 GH_TOKEN
-          publish_dir: ./dist  # 指定部署目录，Valaxy 默认会把静态文件放在 ./dist 目录
-          force_orphan: true  # 强制创建一个孤立分支，不继承历史提交记录，防止可能的冲突
+         github_token: ${{ secrets.GH_TOKEN }}
+         publish_dir: ./dist
+         force_orphan: true
